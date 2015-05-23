@@ -11,19 +11,46 @@ var gameStats = {
 }
 
 // create board
-d3.select("body")
-  .append('div')
-  .attr('class', 'gameboard')
+// d3.select("body")
+//   .append('div')
+//   .attr('class', 'gameboard');
+
+//Create Gameboard
+var gameboard = d3.select("body").append('svg')
+	.attr("width", options.width)
+	.attr("height", options.height)
+	.attr("class", "gameboard")
+	.append("g");
+
+// update score
+var updateScore = d3.select('.current span').text(gameStats.score);
 
 
-//
-var enemy = [{x: 5, y: 4, id: 'a1', 'class': 'enemy'}];
+// find highest score
+gameStats.bestScore = gameStats.score > gameStats.bestScore ? gameStats.score : gameStats.bestScore;
+// update highest score
+var bestScore = d3.select('.high span').text(gameStats.bestScore);
 
-d3.select('.gameboard').selectAll('span')
-  .data([1,2])
-  .enter()
-  .append('span')
-  .attr('class', 'enemy');
+
+// create enemy data
+var enemies = [];
+for(var i = 0; i < options.nEnemies; i++){
+	enemies.push({
+		id : i,
+		x : Math.random() * options.width,
+		y : Math.random() * options.height
+	})
+}
+
+gameboard.selectAll('div')
+	.data(enemies)
+	.enter()
+	.append('svg:circle')
+	.attr('class', 'enemy')
+	.attr('cx', function(d){ return d.x})
+	.attr('cy', function(d){ return d.y})
+	.attr('r', 0)
+	.style("color: black; height: 50px, width: 50px");
 
 
 

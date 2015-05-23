@@ -10,7 +10,12 @@ Feel free to use it if you like. */
   /*margin: 100px auto;*/
 }
 .enemy {
-  background: url("asteroid.png");
+  border: 1px solid black;
   height: 100px;
   width: 100px;
+}
+.scoreboard {
+  border: 1px solid black;
+  width: 800px;
+  height: 100px;
 }
