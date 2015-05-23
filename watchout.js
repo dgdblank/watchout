@@ -22,7 +22,9 @@ var player = {
 	rad : 15
 }
 
-
+var rand = function(n){ return Math.random() * n};
+var randX = function(){ return rand(gameBoard.width)};
+var randY = function(){ return rand(gameBoard.height)};
 
 //Create Gameboard
 var gameBoardSvg = d3.select(".gameboard").append('svg')
@@ -92,31 +94,48 @@ var enemy = {
 
 // TO DO: Add padding
 // Add enemy SVG with random position
-function addEnemySvg(){
-gameBoardSvg.append('circle')
-	.attr('cx', Math.floor(Math.random() * gameBoard.width))
-	.attr('cy', Math.floor(Math.random() * gameBoard.height))
+// var asteroids = gameBoardSvg.selectAll('div')
+// 	.data(d3.range(gameOptions.nEnemies))
+// 	.enter().append('div')
+// 	.style({
+// 		top: randY,
+// 		left: randX,
+// 		width: enemy.rad,
+// 		height: enemy.rad
+// 	})
+// 	.attr('class', 'enemy')
+
+// function addEnemySvg(){
+var asteroids = gameBoardSvg.selectAll('circle')
+	.data(d3.range(gameOptions.nEnemies))
+	.enter().append('circle')
+	.attr('cx', randX)
+	.attr('cy', randY)
 	.attr('r', enemy.rad)
 	.attr('class', 'enemy')
 	.attr('fill', enemy.fill)
-	.attr('id', enemy.id);
+	// .attr('id', enemy.id);
 
-	enemy.id++;
-}
+	// enemy.id++;
+// }
 
-function renderEnemies(){
-	for(var i = 0; i < gameOptions.nEnemies; i++){
-		addEnemySvg();
-	}
-}
+// function renderEnemies(){
+// 	for(var i = 0; i < gameOptions.nEnemies; i++){
+// 		addEnemySvg();
+// 	}
+// }
 
-// initialize first position of player and enemies
+//initialize first position of player and enemies
 var init = function(){
 	renderPlayer();
-	renderEnemies();
+	// renderEnemies();
 }
 
 init();
+
+
+
+
 
 // TO DO:
 // Change enemy position
