@@ -32,13 +32,13 @@ gameStats.bestScore = gameStats.score > gameStats.bestScore ? gameStats.score : 
 var bestScore = d3.select('.high span').text(gameStats.bestScore);
 
 
-// create enemy data
+// create enemy data with random position on board
 var enemies = [];
 for(var i = 0; i < options.nEnemies; i++){
 	enemies.push({
 		id : i,
-		x : Math.random() * options.width,
-		y : Math.random() * options.height
+		x : Math.floor(Math.random() * options.width),
+		y : Math.floor(Math.random() * options.height)
 	})
 }
 
