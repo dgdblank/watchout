@@ -10,7 +10,8 @@ var gameBoard = {
 var gameOptions = {
   score: 0,
   bestScore: 0,
-  nEnemies: 30
+  nEnemies: 30,
+  duration: 1000
 }
 
 var player = {
@@ -35,7 +36,6 @@ var gameBoardSvg = d3.select(".gameboard").append('svg')
 
 
 // create SVG for player
-// TO DO, add dragging functionality
 var playerSvg = function(){
 
 	
@@ -74,14 +74,15 @@ var renderPlayer = function(){
 
 // update score
 var updateScore = function(){
-	gameOptions.score += 50;
+
+	d3.select('.high span').text(gameStats.bestScore = Math.max(gameOptions.score, gameOptions.bestScore));
 	d3.select('.current span').text(gameOptions.score);
 }
 
-var updateBestScore = function(){
-	gameOptions.bestScore = gameStats.score > gameStats.bestScore ? gameStats.score : gameStats.bestScore;
-	d3.select('.high span').text(gameStats.bestScore);
-}
+// var updateBestScore = function(){
+// 	gameOptions.bestScore = gameStats.score > gameStats.bestScore ? gameStats.score : gameStats.bestScore;
+// 	d3.select('.high span').text(gameStats.bestScore);
+// }
 
 // set-up enemy
 var enemy = {
@@ -105,8 +106,8 @@ var enemy = {
 // 	})
 // 	.attr('class', 'enemy')
 
-// function addEnemySvg(){
-var asteroids = gameBoardSvg.selectAll('circle')
+// add enemies SVG
+var enemies = gameBoardSvg.selectAll('circle')
 	.data(d3.range(gameOptions.nEnemies))
 	.enter().append('circle')
 	.attr('cx', randX)
@@ -118,6 +119,20 @@ var asteroids = gameBoardSvg.selectAll('circle')
 
 	// enemy.id++;
 // }
+
+// move asteroids
+var enemyMovement = function(element){
+	element.transition().duration(gameOptions.duration)
+		.attr('cx', randX)
+		.attr('cy', randY)
+		.each('end', function(){ // REVIEW
+			enemyMovement(d3.select(this));
+		})
+}
+
+enemyMovement(enemies);
+
+d3.transition
 
 // function renderEnemies(){
 // 	for(var i = 0; i < gameOptions.nEnemies; i++){
