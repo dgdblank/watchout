@@ -9,8 +9,19 @@ Feel free to use it if you like. */
   width: 800px;
   /*margin: 100px auto;*/
 }
+
+.piece {
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.player {
+  background-color: blue;
+}
+
 .enemy {
-  background: url("asteroid.png");
-  height: 100px;
-  width: 100px;
+  background-image: url("asteroid.png");
 }

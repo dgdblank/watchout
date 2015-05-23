@@ -1,3 +1,26 @@
+// Establish Piece Constructor Functions
+
+var Pieces = function(top, left){
+  this.top = top;
+  this.left = left;
+};
+
+var Player = function(top, left){
+  Pieces.call(this, top, left);
+  this.id = 'player';
+}
+
+Player.prototype = Object.create(Pieces.prototype)
+Player.prototype.constructor = Player;
+
+var Enemy = function(top, left){
+  Pieces.call(this, top, left);
+}
+
+Enemy.prototype = Object.create(Pieces.prototype)
+Enemy.prototype.constructor = Enemy;
+
+// Set Some Game Options
 
 var options = {
   height: 580,
@@ -10,20 +33,49 @@ var gameStats = {
   bestScore: 0
 }
 
-// create board
+// Create The Game Board
+
 d3.select("body")
   .append('div')
   .attr('class', 'gameboard')
 
+// get board coordinates
+d3.select('.gameboard')
 
+debugger
+// find board center
+var centerY = 'SOMETHING'
+var centerX = 'SOMETHING';
+
+// Create the Player
 //
-var enemy = [{x: 5, y: 4, id: 'a1', 'class': 'enemy'}];
+var player = new Player(centerY, centerX);
 
-d3.select('.gameboard').selectAll('span')
-  .data([1,2])
+// append the player to the game baord
+d3.select('.gameboard')
+  .selectAll('span')
+  .data([player])
   .enter()
   .append('span')
-  .attr('class', 'enemy');
+  .attr('class', 'piece player')
+
+// create an array of enemies
+var enemies = [];
+
+for(var i = 0; i < options.nEnemies; i++) {
+  randomTop = 'SOMETHING';
+  randomLeft = 'SOMETHING';
+  // id = "enemy" + (i+1);
+  enemies.push(new Enemy(randomTop, randomLeft));
+}
+
+//append enemies to the gameboard
+d3.select('.gameboard')
+  .selectAll('span')
+  .data(enemies)
+  .enter()
+  .append('span')
+  .attr('class', 'piece enemy')
 
 
 
@@ -55,17 +107,6 @@ d3.select('.gameboard').selectAll('span')
 
 
 // create super class for our pieces
-var Pieces = function(top, left){
-  this.top = top;
-  this.left = left;
-};
-
-var Player = function(top, left){
-  Pieces.call(this, top, left);
-}
-
-Player.prototype = Object.create(Pieces.prototype)
-Player.prototype.constructor = Player;
 // Step 3: Set up the player
 // the image
 // player can drag # find a library
@@ -74,13 +115,6 @@ Player.prototype.constructor = Player;
 // state of the player
 // restrict motion
 //
-
-var Enemy = function(top, left){
-  Pieces.call(this, top, left);
-}
-
-Enemy.prototype = Object.create(Pieces.prototype)
-Enemy.prototype.constructor = Enemy;
 
 // Enemy.prototype.move = function(newLocation) {
 //   var oldLocation = this.location;
