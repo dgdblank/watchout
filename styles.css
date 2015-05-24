@@ -7,21 +7,16 @@ Feel free to use it if you like. */
   border: 1px solid black;
   height: 580px;
   width: 800px;
-  /*margin: 100px auto;*/
+
+}
+.scoreboard {
+  border: 1px solid black;
+  width: 800px;
+  height: 100px;
+}
+.score {
+  font-size: x-large;
+  float: right;
+  padding: 0 30px;
 }
 
-.piece {
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-.player {
-  background-color: blue;
-}
-
-.enemy {
-  background-image: url("asteroid.png");
-}

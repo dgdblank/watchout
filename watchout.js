@@ -1,137 +1,153 @@
-// Establish Piece Constructor Functions
-
-var Pieces = function(top, left){
-  this.top = top;
-  this.left = left;
-};
-
-var Player = function(top, left){
-  Pieces.call(this, top, left);
-  this.id = 'player';
-}
-
-Player.prototype = Object.create(Pieces.prototype)
-Player.prototype.constructor = Player;
-
-var Enemy = function(top, left){
-  Pieces.call(this, top, left);
-}
-
-Enemy.prototype = Object.create(Pieces.prototype)
-Enemy.prototype.constructor = Enemy;
-
-// Set Some Game Options
-
-var options = {
+// set-up the environment
+var gameBoard = {
   height: 580,
   width: 800,
-  nEnemies: 30
+  nEnemies: 30,
+  padding: 20
 }
 
-var gameStats = {
+var gameOptions = {
   score: 0,
-  bestScore: 0
+  bestScore: 0,
+  collisions: 0,
+  nEnemies: 30,
+  duration: 1000
 }
 
-// Create The Game Board
-
-d3.select("body")
-  .append('div')
-  .attr('class', 'gameboard')
-
-// get board coordinates
-d3.select('.gameboard')
-
-debugger
-// find board center
-var centerY = 'SOMETHING'
-var centerX = 'SOMETHING';
-
-// Create the Player
-//
-var player = new Player(centerY, centerX);
-
-// append the player to the game baord
-d3.select('.gameboard')
-  .selectAll('span')
-  .data([player])
-  .enter()
-  .append('span')
-  .attr('class', 'piece player')
-
-// create an array of enemies
-var enemies = [];
-
-for(var i = 0; i < options.nEnemies; i++) {
-  randomTop = 'SOMETHING';
-  randomLeft = 'SOMETHING';
-  // id = "enemy" + (i+1);
-  enemies.push(new Enemy(randomTop, randomLeft));
+var player = {
+	x : gameBoard.width / 2,
+	y : gameBoard.height / 2,
+	fill : '#ff6600',
+	borderColor : 'black',
+	borderWidth : 2,
+	rad : 15
 }
 
-//append enemies to the gameboard
-d3.select('.gameboard')
-  .selectAll('span')
-  .data(enemies)
-  .enter()
-  .append('span')
-  .attr('class', 'piece enemy')
+// store rand function into variable for multiple uses
+var rand = function(n){ return Math.random() * n};
+var randX = function(){ return rand(gameBoard.width)};
+var randY = function(){ return rand(gameBoard.height)};
+
+//Create Gameboard
+var gameBoardSvg = d3.select(".gameboard").append('svg')
+	.attr("width", gameBoard.width)
+	.attr("height", gameBoard.height)
+	.append("g")
 
 
+// create SVG for player
+var playerSvg = function(){
+
+	function dragged() {
+		  var x = d3.event.x;
+		  var y = d3.event.y;
+		  d3.select(this).attr("cx", x).attr("cy", y);
+	}
+
+	var drag = d3.behavior.drag()
+		.on("drag", dragged)  
+
+	gameBoardSvg.append("circle")
+		.attr('class', 'player')
+		.attr('cx', player.x)
+		.attr('cy', player.y)
+		.attr('r', player.rad)
+		.attr('fill', player.fill)
+		.attr('stroke', player.borderColor)
+		.attr('stroke-width', player.borderWidth)
+		.call(drag);
+		
+}
+
+// render player with drag abilities
+playerSvg();
 
 
+// set-up enemy
+var enemy = {
+	rad : 15,
+	fill: '#f0e68c',
+	borderColor : 'black',
+	borderWidth : 2,
+}
 
 
+// add enemy SVG's
+var enemies = gameBoardSvg.selectAll('circle')
+	.data(d3.range(gameOptions.nEnemies))
+	.enter().append('circle')
+	.attr('cx', randX)
+	.attr('cy', randY)
+	.attr('r', enemy.rad)
+	.attr('stroke', enemy.borderColor)
+	.attr('stroke-width', player.borderWidth)
+	.attr('class', 'enemy')
+	.attr('fill', enemy.fill)
 
 
+// move enemies in random directions
+var enemyMovement = function(element){
+	element.transition().duration(gameOptions.duration)
+		.attr('cx', randX)
+		.attr('cy', randY)
+		.each('end', function(){ // REVIEW
+			enemyMovement(d3.select(this));
+		})
+}
 
-// start slingin' some d3 here.
-
-//Step 1: Set-up the environment
-//parameters
-// game Stats
-  // .
-
-
-// Step 2: Set up the game board
-// axes
-// game board (svg region)
-// scores
-//
-// positioned relative
-// div for board
-  // coordinate boundaries using offset prop
-  // top and left
-  // FIGURE OUT BOUNDARIES
-  // absolutely positioned elements at top-l and bottom-r
+enemyMovement(enemies);
 
 
-// create super class for our pieces
-// Step 3: Set up the player
-// the image
-// player can drag # find a library
-// create a player class
-// svg path, perhaps?
-// state of the player
-// restrict motion
-//
+// update score
+var updateScore = function(){
+	d3.select('.high span').text(gameOptions.bestScore);
+	d3.select('.current span').text(gameOptions.score);
+	d3.select('.collisions span').text(gameOptions.collisions);
+}
 
-// Enemy.prototype.move = function(newLocation) {
-//   var oldLocation = this.location;
-// }
-// Step 4: Set up the Enemies
-// array of simple objects
-  // have positions, an id, radius attribute
-  // set random position
+// increase score, set bestScore when player beats bestScore, updates scoreboard
+var scoreTicker = function(){
+	gameOptions.score += 1;
+	gameOptions.bestScore = Math.max(gameOptions.score, gameOptions.bestScore);
+	updateScore();
+}
 
-
-// Perhaps have super class for both Enemies and Player
-// for commonalities
+// Updates score every 100ms
+setInterval(scoreTicker, 100);
 
 
-// Step 5: Render the gameboard
-// add players/enemies to the board
-// collision detection
-// custom tween
-  // tests if enemy has collided with player on each tick
-  //
+// count the number of collisions
+var collisionAlready = false;
+var countCollisions = function(){
+	var collision = false;
+
+	// each enemy 
+	enemies.each(function(enemy){
+		// collect position in space
+		var cx = d3.select(this).attr('cx');
+		var cy = d3.select(this).attr('cy');
+		// determine how far away the enemy is from player
+		var x = cx - d3.select('.player').attr('cx');;
+		var y = cy - d3.select('.player').attr('cy');
+			// if within region of player
+		if(Math.sqrt(x*x + y*y) < player.rad*2){
+			collision = true;
+		}
+	})
+
+		// if collision happens
+		if(collision){
+			// reset score
+			gameOptions.score = 0;
+			// increase collisions
+			if(collisionAlready !== collision){
+				gameOptions.collisions++;
+			}
+		}
+
+		collisionAlready = collision;
+
+};	
+
+// continuously call countCollisions
+d3.timer(countCollisions);		
