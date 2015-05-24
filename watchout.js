@@ -10,6 +10,7 @@ var gameBoard = {
 var gameOptions = {
   score: 0,
   bestScore: 0,
+  collisions: 0,
   nEnemies: 30,
   duration: 1000
 }
@@ -39,74 +40,40 @@ var gameBoardSvg = d3.select(".gameboard").append('svg')
 var playerSvg = function(){
 
 	
-  function dragged() {
-	  var x = d3.event.x;
-	  var y = d3.event.y;
-	  d3.select(this).attr("cx", x).attr("cy", y);
-}
-
-  // function dragstart() {
-  // 	  d3.event.SourceEvent.stopPropogation();
-  // }
+	function dragged() {
+		  var x = d3.event.x;
+		  var y = d3.event.y;
+		  d3.select(this).attr("cx", x).attr("cy", y);
+	}
 
 	var drag = d3.behavior.drag()
-		// .on("dragstart", dragstart)
 		.on("drag", dragged)  
-		// function(){
-		// (this).event.SourceEvent.stopPropogation();
 
 	gameBoardSvg.append("circle")
+		.attr('class', 'player')
 		.attr('cx', player.x)
 		.attr('cy', player.y)
 		.attr('r', player.rad)
 		.attr('fill', player.fill)
 		.attr('stroke', player.borderColor)
 		.attr('stroke-width', player.borderWidth)
-		// .attr("transform", "translate(" + player.x + "," + player.y + ")")
 		.call(drag);
 		
 }
 
-var renderPlayer = function(){
-	playerSvg();
-}
+// render player with drag abilities
+playerSvg();
 
-
-// update score
-var updateScore = function(){
-
-	d3.select('.high span').text(gameStats.bestScore = Math.max(gameOptions.score, gameOptions.bestScore));
-	d3.select('.current span').text(gameOptions.score);
-}
-
-// var updateBestScore = function(){
-// 	gameOptions.bestScore = gameStats.score > gameStats.bestScore ? gameStats.score : gameStats.bestScore;
-// 	d3.select('.high span').text(gameStats.bestScore);
-// }
 
 // set-up enemy
 var enemy = {
-	x: 0,
-	y: 0,
 	rad : 15,
 	fill: 'black',
 	id: 0
 }
 
-// TO DO: Add padding
-// Add enemy SVG with random position
-// var asteroids = gameBoardSvg.selectAll('div')
-// 	.data(d3.range(gameOptions.nEnemies))
-// 	.enter().append('div')
-// 	.style({
-// 		top: randY,
-// 		left: randX,
-// 		width: enemy.rad,
-// 		height: enemy.rad
-// 	})
-// 	.attr('class', 'enemy')
 
-// add enemies SVG
+// add enemy SVG's
 var enemies = gameBoardSvg.selectAll('circle')
 	.data(d3.range(gameOptions.nEnemies))
 	.enter().append('circle')
@@ -115,10 +82,7 @@ var enemies = gameBoardSvg.selectAll('circle')
 	.attr('r', enemy.rad)
 	.attr('class', 'enemy')
 	.attr('fill', enemy.fill)
-	// .attr('id', enemy.id);
 
-	// enemy.id++;
-// }
 
 // move asteroids
 var enemyMovement = function(element){
@@ -132,28 +96,60 @@ var enemyMovement = function(element){
 
 enemyMovement(enemies);
 
-d3.transition
 
-// function renderEnemies(){
-// 	for(var i = 0; i < gameOptions.nEnemies; i++){
-// 		addEnemySvg();
-// 	}
-// }
-
-//initialize first position of player and enemies
-var init = function(){
-	renderPlayer();
-	// renderEnemies();
+// update score
+var updateScore = function(){
+	d3.select('.high span').text(gameOptions.bestScore);
+	d3.select('.current span').text(gameOptions.score);
+	d3.select('.collisions span').text(gameOptions.collisions);
 }
 
-init();
+// increase score, set bestScore when player beats bestScore, updates scoreboard
+var scoreTicker = function(){
+	gameOptions.score += 1;
+	gameOptions.bestScore = Math.max(gameOptions.score, gameOptions.bestScore);
+	updateScore();
+}
+
+// Updates score every 100ms
+setInterval(scoreTicker, 100);
 
 
+// count the number of collisions
+// var alreadyCollided = false;
+var countCollisions = function(){
+	var collision = false;
 
+	// each enemy 
+	enemies.each(function(enemy){
+		// collection position in space
+		var cx = d3.select(this).attr('cx');
+		var cy = d3.select(this).attr('cy');
+		// determine how far away the enemy is from player
+		var x = cx - d3.select('.player').attr('cx');;
+		var y = cy - d3.select('.player').attr('cy');
+			// if within region of player
+		if(Math.sqrt(x*x + y*y) < player.rad*2){
+			collision = true;
+		}
+	})
+
+		// if collision happens
+		if(collision){
+			// reset score
+			gameOptions.score = 0;
+			// increase collisions
+			// if(alreadyCollided !== alreadyCollided){
+				gameOptions.collisions++;
+			// }
+		}
+
+		// alreadyCollided = collision;
+
+};	
+
+d3.timer(countCollisions);		
 
 
 // TO DO:
-// Change enemy position
-// Set up a timer to continuosly change positions
-// Restart scoreboard when enemy touches player
 // Style scoreboard
