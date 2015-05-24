@@ -7,32 +7,16 @@ Feel free to use it if you like. */
   border: 1px solid black;
   height: 580px;
   width: 800px;
-  /*margin: 100px auto;*/
-}
-.enemy {
-  background-image: url("asteroid.png");
-  border: 1px solid black;
-  height: 100px;
-  width: 100px;
+
 }
 .scoreboard {
   border: 1px solid black;
   width: 800px;
   height: 100px;
 }
-  /*piece {
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  background-size: contain;
-  background-repeat: no-repeat;
+.score {
+  font-size: x-large;
+  float: right;
+  padding: 0 30px;
 }
 
-.player {
-  background-color: blue;
-}
-
-.enemy {
-  background-image: url("asteroid.png");
-}*/
-}

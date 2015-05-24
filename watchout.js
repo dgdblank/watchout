@@ -1,4 +1,3 @@
-
 // set-up the environment
 var gameBoard = {
   height: 580,
@@ -33,7 +32,6 @@ var gameBoardSvg = d3.select(".gameboard").append('svg')
 	.attr("width", gameBoard.width)
 	.attr("height", gameBoard.height)
 	.append("g")
-	.attr("padding", gameBoard.padding);
 
 
 // create SVG for player
@@ -68,8 +66,9 @@ playerSvg();
 // set-up enemy
 var enemy = {
 	rad : 15,
-	fill: 'black',
-	id: 0
+	fill: '#f0e68c',
+	borderColor : 'black',
+	borderWidth : 2,
 }
 
 
@@ -80,6 +79,8 @@ var enemies = gameBoardSvg.selectAll('circle')
 	.attr('cx', randX)
 	.attr('cy', randY)
 	.attr('r', enemy.rad)
+	.attr('stroke', enemy.borderColor)
+	.attr('stroke-width', player.borderWidth)
 	.attr('class', 'enemy')
 	.attr('fill', enemy.fill)
 
@@ -116,7 +117,7 @@ setInterval(scoreTicker, 100);
 
 
 // count the number of collisions
-// var alreadyCollided = false;
+var collisionAlready = false;
 var countCollisions = function(){
 	var collision = false;
 
@@ -139,17 +140,14 @@ var countCollisions = function(){
 			// reset score
 			gameOptions.score = 0;
 			// increase collisions
-			// if(alreadyCollided !== alreadyCollided){
+			if(collisionAlready !== collision){
 				gameOptions.collisions++;
-			// }
+			}
 		}
 
-		// alreadyCollided = collision;
+		collisionAlready = collision;
 
 };	
 
+// continuously call countCollisions
 d3.timer(countCollisions);		
-
-
-// TO DO:
-// Style scoreboard
