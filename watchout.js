@@ -23,6 +23,7 @@ var player = {
 	rad : 15
 }
 
+// store rand function into variable for multiple uses
 var rand = function(n){ return Math.random() * n};
 var randX = function(){ return rand(gameBoard.width)};
 var randY = function(){ return rand(gameBoard.height)};
@@ -37,7 +38,6 @@ var gameBoardSvg = d3.select(".gameboard").append('svg')
 // create SVG for player
 var playerSvg = function(){
 
-	
 	function dragged() {
 		  var x = d3.event.x;
 		  var y = d3.event.y;
@@ -85,7 +85,7 @@ var enemies = gameBoardSvg.selectAll('circle')
 	.attr('fill', enemy.fill)
 
 
-// move asteroids
+// move enemies in random directions
 var enemyMovement = function(element){
 	element.transition().duration(gameOptions.duration)
 		.attr('cx', randX)
@@ -123,7 +123,7 @@ var countCollisions = function(){
 
 	// each enemy 
 	enemies.each(function(enemy){
-		// collection position in space
+		// collect position in space
 		var cx = d3.select(this).attr('cx');
 		var cy = d3.select(this).attr('cy');
 		// determine how far away the enemy is from player
